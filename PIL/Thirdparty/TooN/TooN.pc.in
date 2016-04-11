@@ -1,0 +1,8 @@
+prefix=@prefix@
+includedir=@includedir@
+
+Name: TooN
+Description: Tom's Object-oriented numerics library
+Version: @VERSION@
+Libs: @LIBS@
+Cflags: -I${includedir}

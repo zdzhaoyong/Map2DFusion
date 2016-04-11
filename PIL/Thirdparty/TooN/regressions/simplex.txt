@@ -1,0 +1,10 @@
+#The minimm is at f(0, 0) = -1
+#> t 1e-7
+
+#Fixed sized solver
+0 0
+-1
+
+#Variable sized solver
+0 0 
+-1

@@ -1,0 +1,58 @@
+#< t 1e-16
+
+Check for determinant
+4.61
+
+Static size checks:
+Check decomposition, both matrices should be the same.
+
+1 0.5 0.5
+0.5 2 0.7
+0.5 0.7 3
+
+1 0.5 0.5
+0.5 2 0.7
+0.5 0.7 3
+
+Check inverse, third matrix should be close to identity.
+1 0.5 0.5
+0.5 2 0.7
+0.5 0.7 3
+
+ 1.1952277657266810e+00 -2.4945770065075915e-01 -1.4099783080260306e-01
+-2.4945770065075915e-01  5.9652928416485884e-01 -9.7613882863340537e-02
+-1.4099783080260306e-01 -9.7613882863340537e-02  3.7960954446854661e-01
+
+1 0 0
+0 1 0
+0 0 1
+
+Dynamic size, single precision checks:
+Check decomposition, both matrices should be the same.
+1 0.5 0.5
+0.5 2 0.7
+0.5 0.7 3
+
+1 0.5 0.5
+0.5 2 0.7
+0.5 0.7 3
+
+Check inverse, third matrix should be close to identity.
+1 0.5 0.5
+0.5 2 0.7
+0.5 0.7 3
+
+ 1.1952277657266810e+00 -2.4945770065075915e-01 -1.4099783080260306e-01
+-2.4945770065075915e-01  5.9652928416485884e-01 -9.7613882863340537e-02
+-1.4099783080260306e-01 -9.7613882863340537e-02  3.7960954446854661e-01
+
+1 0 0
+0 1 0
+0 0 1
+
+Check backsub(), the following two vectors should be the same.
+2.7331887201735361e-01 6.5075921908893697e-01 8.0260303687635570e-01
+2.7331887201735361e-01 6.5075921908893697e-01 8.0260303687635570e-01
+
+Check mahalanobis(), result should be zero.
+0

@@ -1,0 +1,11 @@
+TOPDIR          ?= ../..
+LIB_MAKE_TYPE   = shared
+#LIB_MAKE_TYPE   ?=static
+MAKE_TYPE       = $(LIB_MAKE_TYPE)
+LIB_PREFIX      = libpi_
+BUILD_PATH      = $(TOPDIR)/build/src/$(HereFolderName)
+
+include $(TOPDIR)/scripts/make.conf
+
+clean_tmp:
+	@rm $(BUILD_PATH) -r

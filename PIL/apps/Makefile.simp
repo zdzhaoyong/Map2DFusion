@@ -1,0 +1,13 @@
+TOPDIR 	?= ../..
+MAKE_TYPE =bin
+LIB_PREFIX=
+BUILD_PATH=$(TOPDIR)/build/apps/$(HereFolderName)
+
+COMPILEFLAGS= $(SIMP_CFLAGS)
+LINKFLAGS   = $(SIMP_LDFLAGS)
+
+EXEEXT      =  
+
+include $(TOPDIR)/scripts/make.conf
+
+

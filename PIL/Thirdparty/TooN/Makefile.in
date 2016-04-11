@@ -1,0 +1,101 @@
+#Standard boilerplate
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+mandir = @mandir@
+includedir = @includedir@
+datarootdir = @datarootdir@
+pkgconfig = @PKGCONFIG_LIBDIR@
+
+ifneq "$(DESTDIR)" ""
+DESTDIR+=/
+endif
+
+CXX=@CXX@
+CXXFLAGS=@CXXFLAGS@
+LDFLAGS=@LDFLAGS@ @LIBS@
+
+hdr = $(DESTDIR)$(includedir)/TooN
+
+
+.PHONY: all clean testclean 
+
+all:
+	@echo There is nothing to be compiled in TooN.
+	@echo It is now ready to be installed.
+
+install:
+	mkdir -p $(hdr)
+	cp *.h $(hdr)
+	cp -r optimization $(hdr)/
+	cp -r internal $(hdr)/
+	cp -r functions $(hdr)/
+	[ "$(pkgconfig)" == "" ] || mkdir -p $(DESTDIR)$(pkgconfig)
+	[ "$(pkgconfig)" == "" ] || cp TooN.pc $(DESTDIR)$(pkgconfig)/
+
+internal/data_functions.hh:  make_data_functions.awk
+	awk -f make_data_functions.awk > $@
+internal/make_vector.hh:  make_make_vector.awk
+	awk -f make_make_vector.awk > $@
+
+internal/builtin_typeof.h:make_typeof.awk
+	awk -f make_typeof.awk > $@
+
+clean: testclean
+	rm -rf html
+
+docs:
+	doxygen 
+
+
+LAPACK_TESTS=eigen-sqrt chol_lapack sym_eigen qr lu determinant
+BUILTIN_TESTS=slice vector_resize gauss_jordan chol_toon fill so3 complex gr_svd diagonal_matrix gaussian_elimination zeros
+
+ifeq (@use_lapack@,yes)
+	TESTS=$(BUILTIN_TESTS) $(LAPACK_TESTS)
+	MISSING_TESTS=
+else
+	TESTS=$(BUILTIN_TESTS) 
+	MISSING_TESTS=$(LAPACK_TESTS)
+endif
+
+TEST_RESULT=$(TESTS:%=regressions/%.result)
+TEST_FILES=$(TESTS:%=regressions/%.testout) $(TESTS:%=regressions/%.test) $(TEST_RESULT)
+
+testclean:
+	rm -f $(TEST_FILES)
+
+foo:
+	echo $(MAKEFLAGS)
+
+.PHONY: test
+
+test:regressions/results
+	@echo -------------- Test Results ---------------
+	@cat regressions/results
+	@echo $(MISSING_TESTS) | awk '{for(i=1; i <= NF; i++) print $$i, "Missing."}'
+
+regressions/results:$(TEST_RESULT)
+	cat $(TEST_RESULT) > regressions/results
+
+.PRECIOUS: regressions/%.testout regressions/%.test
+
+TooN:
+	ln -s "$$PWD" TooN
+
+.INTERMEDIATE: TooN
+
+#Build a test executable from a test program. On compile error,
+#create an execuaable which decalres the error.
+regressions/%.test: regressions/%.cc TooN
+	$(CXX) $(CXXFLAGS) $< -o $@ -DTOON_CHECK_BOUNDS -DTOON_INITIALIZE_SNAN -I ..  -I . $(LDFLAGS) ||\
+	{ \
+	  echo "echo 'Compile error!'" > $@ ; \
+	  chmod +x $@; \
+	}
+	
+regressions/%.testout: regressions/%.test
+	$< > $@ || ( echo Crash!!! > $@ )
+
+regressions/%.result: regressions/%.testout regressions/%.txt
+	awk -vname=$* -f numdiff.awk -vf1=$< -vf2=regressions/$*.txt > $@	
+	

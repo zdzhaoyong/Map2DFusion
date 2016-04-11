@@ -1,0 +1,16 @@
+################################################################################
+# Definations
+################################################################################
+
+PIL_LINUX       - Linux OS
+PIL_WINDOWS     - Windows OS
+
+PIL_DEBUG       - debug switch open
+
+HAS_CVD         - use CVD
+HAS_TOON        - use TOON
+USE_C           - compile some source use C
+HAVE_SSE2       - dSFMT use SSE2 instructions
+HAVE_OPENMP     - use OpenMP
+HAS_OPENCV      - use OpenCV
+

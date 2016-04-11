@@ -1,0 +1,45 @@
+CameraTest> ./CameraTest 
+  Parsing file Default.cfg ....
+Times=100000
+new OpenCV camera.
+new PinHole camera.
+Preparing remap...
+Remap prepared.
+
+----------------------------- ZhaoYong::Svar report --------------------------
+ NAME                                      VAR                                
+------------------------------------------------------------------------------
+CameraIn                                 in.cam                                 
+CameraOut                                out.cam                                
+height_in                                1080                                   
+height_out                               540                                    
+width_in                                 1920                                   
+width_out                                960                                    
+------------------------ End of ZhaoYong::Svar report ------------------------
+undis initialed.
+1920
+1123.37
+1110
+
+----------------------------- ZhaoYong::Svar report --------------------------
+ NAME                                      VAR                                
+------------------------------------------------------------------------------
+Svar.DumpAllVars                         0                                      
+------------------------------------------------------------------------------
+img_in                                   /data/zhaoyong/Linux/Program/Apps/uav_image/MapRTK/Data/videos/Calibration/GoPro_1080_Middle_2/2694.jpg
+undis_cfg                                undis.cfg                              
+------------------------ End of ZhaoYong::Svar report ------------------------
+
+---------------------------- ZhaoYong::Timer report --------------------------
+           FUNCTION                       #CALLS  MIN.T  MEAN.T  MAX.T  TOTAL 
+------------------------------------------------------------------------------
+DoNothing                                    1  183.0us 183.0us 183.0us 183.0us
+Project::OpenCV                              1    4.0ms   4.0ms   4.0ms   4.0ms
+Project::PTAM                                1    5.9ms   5.9ms   5.9ms   5.9ms
+Project::Pinhole                             1    1.2ms   1.2ms   1.2ms   1.2ms
+UnProject::OpenCV                            1    7.3ms   7.3ms   7.3ms   7.3ms
+UnProject::PTAM                              1    6.8ms   6.8ms   6.8ms   6.8ms
+UnProject::Pinhole                           1    1.2ms   1.2ms   1.2ms   1.2ms
+Undistortion                                 1    7.3ms   7.3ms   7.3ms   7.3ms
+----------------------- End of ZhaoYong::Timer report ------------------------
+

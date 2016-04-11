@@ -1,0 +1,15 @@
+TOPDIR 	?= ..
+MAKE_TYPE =bin
+LIB_PREFIX=
+BUILD_PATH=$(TOPDIR)/build/Map2DFusion
+LIB_PI_TOP=$(TOPDIR)/PIL
+
+COMPILEFLAGS= $(SIMP_CFLAGS)
+LINKFLAGS   = $(SIMP_LDFLAGS)
+BIN_PATH   ?= $(TOPDIR)
+OUTPUT      = Map2DFusion
+EXEEXT      =  
+
+include $(TOPDIR)/scripts/make.conf
+
+

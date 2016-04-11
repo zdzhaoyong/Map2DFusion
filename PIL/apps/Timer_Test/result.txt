@@ -1,0 +1,11 @@
+Timer_Test> ../../bin/Timer_Test 
+
+---------------------------- ZhaoYong::Timer report --------------------------
+           FUNCTION                       #CALLS  MIN.T  MEAN.T  MAX.T  TOTAL 
+------------------------------------------------------------------------------
+DelayTest                                  100    0.0ps 270.0ns   3.0us  27.0us
+True=10ms                                  100   10.1ms  10.1ms  10.1ms   1.0 s
+True=10us                                  100   66.0us  70.4us 109.0us   7.0ms
+True=1ms                                   100    1.1ms   1.1ms   1.1ms 106.4ms
+----------------------- End of ZhaoYong::Timer report ------------------------
+

@@ -1,0 +1,3 @@
+#LIB_MAKE_TYPE =static
+MODULES += PI_BASE LUA 
+

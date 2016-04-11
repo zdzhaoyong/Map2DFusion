@@ -1,0 +1,12 @@
+Hello world! 10
+float value:     1.234000, int value: 04562
+Elapsed time: 1.23 seconds
+Don't panic!
+Don't panic again!
+Elapsed time: 1.23 seconds
+Don't panic! (fprintf)
+The answer is 42
+
+Hello a = 42, b=2a
+The date is 2012-12-9
+Error: file not found: /usr/include/math.h

@@ -1,0 +1,10 @@
+build
+data
+libs
+*.pro.user*
+Map2DFusion
+PIL/build
+PIL/bin
+PIL/libs
+.qgl*
+Map2DFusion.pro

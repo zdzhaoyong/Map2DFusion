@@ -1,0 +1,30 @@
+Svar_Test> ../../bin/Svar_Test 
+!Svar::ParseFile: Failed to load script file "Default.cfg".
+Parament=Success
+SvarWithType.TestInt=1000
+SvarWithType.TestInt=1000
+SvarWithType.TestDouble=1000
+SvarWithType.TestString=1000
+SvarWithType.TestInt=1000
+SvarWithType.TestDouble=1000
+SvarWithType.TestString=1000
+SvarWithType.TestInt=1000
+
+---------------------------- ZhaoYong::Timer report --------------------------
+           FUNCTION                       #CALLS  MIN.T  MEAN.T  MAX.T  TOTAL 
+------------------------------------------------------------------------------
+GlobalMain                                   1    5.1ms   5.1ms   5.1ms   5.1ms
+Svar.Parse                                   1  142.0us 142.0us 142.0us 142.0us
+Svar.TestDouble                           1000    0.0ps 460.0ns   2.0us 460.0us
+Svar.TestDouble.First                        1   22.0us  22.0us  22.0us  22.0us
+Svar.TestInt                              1000    0.0ps 379.0ns   1.0us 379.0us
+Svar.TestInt.First                           1   10.0us  10.0us  10.0us  10.0us
+Svar.TestString                           1000    0.0ps 542.0ns   1.0us 542.0us
+Svar.TestString.First                        1    4.0us   4.0us   4.0us   4.0us
+SvarWithType.TestDouble.First                1    7.0us   7.0us   7.0us   7.0us
+SvarWithType.TestInt.First                   1    3.0us   3.0us   3.0us   3.0us
+SvarWithType.TestString.First                1    5.0us   5.0us   5.0us   5.0us
+cmd.Call                                     1    9.0us   9.0us   9.0us   9.0us
+cmd.RegisterCommand                          1   50.0us  50.0us  50.0us  50.0us
+----------------------- End of ZhaoYong::Timer report ------------------------
+
