@@ -1,4 +1,4 @@
-#The Pilot Intelligent Library
+#The Pilot Intelligence Library
 ------------------------------------------------------------------------------
 
 ##1. Introduction
