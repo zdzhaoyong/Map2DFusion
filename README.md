@@ -22,6 +22,7 @@ PDF     : http://zhaoyong.adv-ci.com/Data/map2dfusion/map2dfusion.pdf
 - Qt      : sudo apt-get install build-essential g++ libqt4-core libqt4-dev libqt4-gui qt4-doc qt4-designer
 - QGLViewer : sudo apt-get install libqglviewer-dev libqglviewer2
 - Boost   : sudo apt-get install libboost1.48-all-dev
+- GLEW    : sudo apt-get install libglew-dev libglew1.10
 - CUDA (optional) : see https://developer.nvidia.com/cuda-downloads
 
 > Warnning: Compilation with CUDA can be enabled after CUDA_PATH defined.

@@ -9,7 +9,7 @@
 #include <base/time/Global_Timer.h>
 #include <base/time/DateTime.h>
 #include <hardware/Camera/Cameras.h>
-#include <hardware/Camera/undistorter.h>
+#include <hardware/Camera/Undistorter.h>
 
 using namespace cv;
 using namespace std;

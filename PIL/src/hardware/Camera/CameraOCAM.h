@@ -1,7 +1,7 @@
 #ifndef CAMERAOCAM_H
 #define CAMERAOCAM_H
 //This is going to remove!
-//#include "Camera.h"
+#include "Camera.h"
 #include <iostream>
 #include "Undistorter.h"
 #define CORRECT_AXIS 1

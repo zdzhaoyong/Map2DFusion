@@ -1,11 +1,10 @@
 #include <base/Svar/Svar_Inc.h>
 #include <base/time/Global_Timer.h>
-#include <hardware/Camera/Camera.h>
-#include <hardware/Camera/Undistorter.h>
 #include <base/types/Random.h>
 
+#include <hardware/Camera/Camera.h>
 #include <hardware/Camera/Cameras.h>
-#include <hardware/Camera/undistorter.h>
+#include <hardware/Camera/Undistorter.h>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -196,12 +195,12 @@ int main(int argc,char** argv)
     pinhole.applyScale();
     cout<<pinhole.info()<<endl;
 
-    Undistorter undis(GetCopy(&anta),GetCopy(&pinhole));
-    if(!undis.valid){cout<<"Undis not valid";return -1;}
-//    pi::hardware::Undistorter undis(pi::hardware::Camera(svar.GetString("Undis.CameraIn","GoProFISH")),
-//                                    pi::hardware::Camera(svar.GetString("Undis.CameraOut","GoProIdeaM1080")));
+//    Undistorter undis(GetCopy(&anta),GetCopy(&pinhole));
+//    if(!undis.valid){cout<<"Undis not valid";return -1;}
+    pi::hardware::Undistorter undis(pi::hardware::Camera(svar.GetString("Undis.CameraIn","GoProFISH")),
+                                    pi::hardware::Camera(svar.GetString("Undis.CameraOut","GoProIdeaM1080")));
 
-//    if(!undis.valid()) {cout<<"Undis not valid";return -1;}
+    if(!undis.valid()) {cout<<"Undis not valid";return -1;}
 
 //    return 0;
     cv::Mat img=cv::imread(svar.GetString("img_in","img.jpg"));

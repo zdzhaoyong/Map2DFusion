@@ -1,42 +1,32 @@
-#ifndef _UNDISTORTER_HPP_
-#define _UNDISTORTER_HPP_
+#ifndef UNDISTORTER_H
+#define UNDISTORTER_H
 
 #include <opencv2/core/core.hpp>
 
-#include "Camera.h"
+#include "Cameras.h"
 
+namespace pi{
+namespace hardware{
+
+class UndistorterImpl;
 class Undistorter
 {
 public:
-    Undistorter(std::string config_file);
-    Undistorter(Camera* in, Camera* out) : camera_in(in),camera_out(out) {
-        prepareReMap();
-    }
-    ~Undistorter();
+    Undistorter(Camera in, Camera out);
 
     bool undistort(const cv::Mat& image, cv::Mat& result);
+    //Undistorting fast, no interpolate (bilinear) is used
     bool undistortFast(const cv::Mat& image, cv::Mat& result);
 
-protected:
+    Camera cameraIn();
+    Camera cameraOut();
+
     bool prepareReMap();
-
-public:
-    Camera* camera_in;
-    Camera* camera_out;
-
-    int width_in, height_in;
-    int width_out,height_out;
-
-    float*  remapX;
-    float*  remapY;
-    int*    remapFast;
-
-    int     *remapIdx;
-    float   *remapCoef;
-
-    /// Is true if the undistorter object is valid (has been initialized with
-    /// a valid configuration)
-    bool    valid;
+    bool valid();
+private:
+    SPtr<UndistorterImpl> impl;
 };
 
-#endif
+}
+}
+#endif // UNDISTORTER_H

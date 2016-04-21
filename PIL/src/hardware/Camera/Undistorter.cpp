@@ -1,11 +1,6 @@
 #include "Undistorter.h"
 
-#include "base/Svar/Svar.h"
-#include "base/debug/debug_config.h"
-
-#include <sstream>
-#include <fstream>
-
+#include <iostream>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <omp.h>
@@ -17,6 +12,50 @@
 
 using namespace std;
 
+namespace pi {
+namespace hardware {
+
+class UndistorterImpl
+{
+public:
+    UndistorterImpl(Camera in, Camera out)
+        : camera_in(in),camera_out(out),remapX(NULL),remapY(NULL),remapFast(NULL),
+          remapIdx(NULL),remapCoef(NULL),valid(true)
+    {
+        prepareReMap();
+    }
+    ~UndistorterImpl()
+    {
+        if( remapX != NULL )        delete[] remapX;
+        if( remapY != NULL )        delete[] remapY;
+        if( remapFast != NULL )     delete[] remapFast;
+
+        if( remapIdx != NULL )      delete[] remapIdx;
+        if( remapCoef != NULL)      delete[] remapCoef;
+    }
+
+    bool undistort(const cv::Mat& image, cv::Mat& result);
+    bool undistortFast(const cv::Mat& image, cv::Mat& result);
+
+    bool prepareReMap();
+
+public:
+    Camera camera_in;
+    Camera camera_out;
+
+    float*  remapX;
+    float*  remapY;
+    int*    remapFast;
+
+    int     *remapIdx;
+    float   *remapCoef;
+
+    /// Is true if the undistorter object is valid (has been initialized with
+    /// a valid configuration)
+    bool    valid;
+};
+
+
 template <int Size>
 struct Byte
 {
@@ -25,146 +64,107 @@ struct Byte
 
 typedef Byte<3> rgb;
 
-
-Undistorter::Undistorter(std::string config_file)
-{
-    valid = false;
-
-    camera_in   = NULL;
-    camera_out  = NULL;
-
-    remapX = NULL;
-    remapY = NULL;
-    remapIdx  = NULL;
-    remapCoef = NULL;
-
-    Svar config;
-    config.ParseFile(config_file);
-
-    camera_in  = GetCameraFromFile(config.GetString("CameraIn", "in.cam"));
-    camera_out = GetCameraFromFile(config.GetString("CameraOut","out.cam"));
-
-    prepareReMap();
-
-}
-
-Undistorter::~Undistorter()
-{
-    if( camera_in != NULL )     delete camera_in;
-    if( camera_out != NULL )    delete camera_out;
-
-    if( remapX != NULL )        delete[] remapX;
-    if( remapY != NULL )        delete[] remapY;
-
-    if( remapIdx != NULL )      delete[] remapIdx;
-    if( remapCoef != NULL)      delete[] remapCoef;
-}
-
-
-bool Undistorter::prepareReMap()
+bool UndistorterImpl::prepareReMap()
 {
     // check camera model
-    if( !(camera_in && camera_out) )
+    if( !(camera_in.isValid() && camera_out.isValid()) )
     {
         valid = false;
-        dbg_pe("Undistorter does not get vallid camera.");
+        cout<<("Undistorter does not get vallid camera.");
         return false;
     }
+    // Prepare remap
+    cout << "Undistorter:\n";
+    cout << "    Camera IN : " << camera_in.info() << endl;
+    cout << "    Camera OUT: " << camera_out.info() << endl << endl;
+    int size=camera_out.width() * camera_out.height();
+    remapX    = new float[size];
+    remapY    = new float[size];
+    remapFast = new int[size];
 
-    width_in   = camera_in->Width();
-    width_out  = camera_out->Width();
-    height_in  = camera_in->Height();
-    height_out = camera_out->Height();
+    remapIdx  = new int  [size*4];
+    remapCoef = new float[size*4];
+    Point3d world_pose;Point2d im_pose;
+    int w_in=camera_in.width(),h_in=camera_in.height();
+    for(int y=0,yend=camera_out.height(); y<yend; y++)
+        for(int x=0,xend=camera_out.width(); x<xend; x++)
+        {
+            int i = y*xend+x;
 
+            world_pose=camera_out.UnProject(Point2d(x,y));
+            im_pose = camera_in.Project(world_pose);
 
-    valid = camera_in->isValid() && camera_out->isValid();
-    if( valid )
-    {
-        // Prepare remap
-        cout << "Undistorter:\n";
-        cout << "    Camera IN : " << camera_in->info() << endl;
-        cout << "    Camera OUT: " << camera_out->info() << endl << endl;
-
-        remapX    = new float[width_out * height_out];
-        remapY    = new float[width_out * height_out];
-        remapFast = new int[width_out * height_out];
-
-        remapIdx  = new int  [width_out*height_out*4];
-        remapCoef = new float[width_out*height_out*4];
-
-        for(int y=0; y<height_out; y++)
-            for(int x=0; x<width_out; x++)
+            if(im_pose.x<0 || im_pose.y<0 ||
+                    im_pose.x>=w_in||im_pose.y>=h_in)
             {
-                int i = y*width_out+x;
+                remapX[i]    = -1;
+                remapY[i]    = -1;
+                remapFast[i] = -1;
 
-                Point2D tmp=camera_out->UnProject(x,y);
-                tmp = camera_in->Project(tmp[0],tmp[1]);
+                remapIdx[i*4+0]  = 0;
+                remapIdx[i*4+1]  = 0;
+                remapIdx[i*4+2]  = 0;
+                remapIdx[i*4+3]  = 0;
 
-                remapX[i]    = tmp[0];
-                remapY[i]    = tmp[1];
-                remapFast[i] = (int)tmp[0]+width_in*(int)tmp[1];
-
-                if(tmp[0]<0 || tmp[1]<0 ||
-                   tmp[0]>=width_in||tmp[1]>=height_in)
-                {
-                    remapX[y*width_out+x]    = -1;
-                    remapFast[y*width_out+x] = -1;
-//                    cerr<<"Out of image: dest:["<<x<<","<<y
-//                       <<"], src:["<<tmp<<"], plane:["<<camera_out->UnProject(x,y)<<"]\n";
-                }
-
-                // calculate fast bi-linear interpolation indices & coefficients
-                {
-                    float xx = remapX[i];
-                    float yy = remapY[i];
-
-                    if( xx < 0.0 ) continue;
-
-                    // get integer and rational parts
-                    int xxi = xx;
-                    int yyi = yy;
-                    xx -= xxi;
-                    yy -= yyi;
-                    float xxyy = xx*yy;
-
-                    remapIdx[i*4+0]  = yyi*width_in + xxi;
-                    remapIdx[i*4+1]  = yyi*width_in + xxi + 1;
-                    remapIdx[i*4+2]  = (yyi+1)*width_in + xxi;
-                    remapIdx[i*4+3]  = (yyi+1)*width_in + xxi + 1;
-
-                    remapCoef[i*4+0] = 1-xx-yy+xxyy;
-                    remapCoef[i*4+1] = xx-xxyy;
-                    remapCoef[i*4+2] = yy-xxyy;
-                    remapCoef[i*4+3] = xxyy;
-                }
+                remapCoef[i*4+0] = 0;
+                remapCoef[i*4+1] = 0;
+                remapCoef[i*4+2] = 0;
+                remapCoef[i*4+3] = 0;
+                continue;
             }
-        //cout<<"Remap prepared.\n";
-    }
-    else
-    {
-        dbg_pe("Undistorter is not valid!");
-    }
 
-    return valid;
+            {
+                remapX[i]    = im_pose.x;
+                remapY[i]    = im_pose.y;
+                remapFast[i] = (int)im_pose.x+w_in*(int)im_pose.y;
+            }
+
+            // calculate fast bi-linear interpolation indices & coefficients
+            {
+                float xx = remapX[i];
+                float yy = remapY[i];
+
+                if( xx < 0.0 ) continue;
+
+                // get integer and rational parts
+                int xxi = xx;
+                int yyi = yy;
+                xx -= xxi;
+                yy -= yyi;
+                float xxyy = xx*yy;
+
+                remapIdx[i*4+0]  = yyi*w_in + xxi;
+                remapIdx[i*4+1]  = yyi*w_in + xxi + 1;
+                remapIdx[i*4+2]  = (yyi+1)*w_in + xxi;
+                remapIdx[i*4+3]  = (yyi+1)*w_in + xxi + 1;
+
+                remapCoef[i*4+0] = 1-xx-yy+xxyy;
+                remapCoef[i*4+1] = xx-xxyy;
+                remapCoef[i*4+2] = yy-xxyy;
+                remapCoef[i*4+3] = xxyy;
+            }
+        }
+    valid=true;
+    return true;
 }
 
 //Undistorting fast, no interpolate (bilinear) is used
-bool Undistorter::undistortFast(const cv::Mat& image, cv::Mat& result)
+bool UndistorterImpl::undistortFast(const cv::Mat& image, cv::Mat& result)
 {
     if (!valid)
     {
-        dbg_pe("Undistorter is not valid! Not undistorting.\n");
         result = image;
         return false;
     }
+    int width_out=camera_out.width();
+    int height_out=camera_out.height();
 
-    if (image.rows != height_in || image.cols != width_in)
+    if (image.rows != camera_in.height() || image.cols != camera_in.width())
     {
-        dbg_pe("input image size differs from expected input size! Not undistorting.\n");
+        cerr<<("input image size differs from expected input size! Not undistorting.\n");
         result = image;
         return false;
     }
-
 
     int wh=width_out*height_out;
     int c=image.channels();
@@ -213,21 +213,22 @@ bool Undistorter::undistortFast(const cv::Mat& image, cv::Mat& result)
 }
 
 //Undistorting bilinear interpolation
-bool Undistorter::undistort(const cv::Mat& image, cv::Mat& result)
+bool UndistorterImpl::undistort(const cv::Mat& image, cv::Mat& result)
 {
     if (!valid)
     {
         result = image;
         return false;
     }
+    int width_out=camera_out.width();
+    int height_out=camera_out.height();
 
-    if (image.rows != height_in || image.cols != width_in)
+    if (image.rows != camera_in.height() || image.cols != camera_in.width())
     {
-        dbg_pe("input image size differs from expected input size! Not undistorting.\n");
+        cerr<<("input image size differs from expected input size! Not undistorting.\n");
         result = image;
         return false;
     }
-
 
     int wh=width_out*height_out;
     int c=image.channels();
@@ -289,3 +290,33 @@ bool Undistorter::undistort(const cv::Mat& image, cv::Mat& result)
 
     return true;
 }
+
+Undistorter::Undistorter(Camera in, Camera out)
+    :impl(new UndistorterImpl(in,out))
+{
+}
+
+bool Undistorter::undistort(const cv::Mat& image, cv::Mat& result)
+{
+    return impl->undistort(image,result);
+}
+
+bool Undistorter::undistortFast(const cv::Mat& image, cv::Mat& result)
+{
+    return impl->undistortFast(image,result);
+}
+
+Camera Undistorter::cameraIn(){return impl->camera_in;}
+Camera Undistorter::cameraOut(){return impl->camera_out;}
+
+bool Undistorter::prepareReMap()
+{
+    return impl->prepareReMap();
+}
+
+bool Undistorter::valid()
+{
+    return impl->valid;
+}
+
+}}
