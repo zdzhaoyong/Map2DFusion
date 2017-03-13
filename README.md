@@ -23,6 +23,7 @@ PDF     : http://zhaoyong.adv-ci.com/Data/map2dfusion/map2dfusion.pdf
 - QGLViewer : sudo apt-get install libqglviewer-dev libqglviewer2
 - Boost   : sudo apt-get install libboost1.48-all-dev
 - GLEW    : sudo apt-get install libglew-dev libglew1.10
+- GLUT : sudo apt-get install freeglut3 freeglut3-dev
 - CUDA (optional) : see https://developer.nvidia.com/cuda-downloads
 
 > Warnning: Compilation with CUDA can be enabled after CUDA_PATH defined.
