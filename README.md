@@ -19,12 +19,13 @@ PDF     : http://zhaoyong.adv-ci.com/Data/map2dfusion/map2dfusion.pdf
 
 ### 1.2. Dependencies
 - OpenCV  : sudo apt-get install libopencv-dev
-- Qt      : sudo apt-get install build-essential g++ libqt4-core libqt4-dev libqt4-gui qt4-doc qt4-designer
+- Qt      : sudo apt-get install build-essential g++ libqt4-core libqt4-dev libqt4-gui qt4-doc qt4-designer libqt4-sql-sqlite
 - QGLViewer : sudo apt-get install libqglviewer-dev libqglviewer2
 - Boost   : sudo apt-get install libboost1.54-all-dev
 - GLEW    : sudo apt-get install libglew-dev libglew1.10
 - GLUT : sudo apt-get install freeglut3 freeglut3-dev
 - CUDA (optional) : see https://developer.nvidia.com/cuda-downloads
+- IEEE 1394: sudo apt-get install libdc1394-22 libdc1394-22-dev libdc1394-utils
 
 > Warnning: Compilation with CUDA can be enabled after CUDA_PATH defined.
 
