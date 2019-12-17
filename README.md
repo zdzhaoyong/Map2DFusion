@@ -1,5 +1,8 @@
 # Map2DFusion
 ------------------------------------------------------------------------------
+
+![](./map2dfusion.gif)
+
 ## Brief Introduction
 This is an open-source implementation of paper:
 Map2DFusion: Real-time Incremental UAV Image Mosaicing based on Monocular SLAM.
@@ -9,6 +12,23 @@ Website : http://zhaoyong.adv-ci.com/map2dfusion/
 Video   : https://www.youtube.com/watch?v=-kSTDvGZ-YQ
 
 PDF     : http://zhaoyong.adv-ci.com/Data/map2dfusion/map2dfusion.pdf   
+
+If you use this project for research, please cite our paper:
+
+```
+@CONFERENCE{zhaoyong2016Map2DFusion, 
+	author={S. {Bu} and Y. {Zhao} and G. {Wan} and Z. {Liu}}, 
+	booktitle={2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+	title={Map2DFusion: Real-time incremental UAV image mosaicing based on monocular SLAM}, 
+	year={2016}, 
+	volume={}, 
+	number={}, 
+	pages={4564-4571}, 
+	doi={10.1109/IROS.2016.7759672}, 
+	ISSN={2153-0866}, 
+	month={Oct}
+}
+```
 
 ## 1. Compilation
 ### 1.1. Resources
